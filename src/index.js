@@ -20,6 +20,16 @@ async function main() {
     // const nameToGreet = core.getInput('who-to-greet')
     console.log('Starting publish-to-action...')
 
+    const token = process.env.GITHUB_TOKEN
+    const owner = process.env.GITHUB_ACTOR
+    const repo = process.env.GITHUB_REPOSITORY
+    const message = 'automated: publish-to-github action'
+    const remote = `https://${owner}:${token}@github.com/${repo}.git`
+
+    const branchName = 'master'
+    const githubSha = process.env.GITHUB_SHA
+    const timestamp = new Date().toISOString()
+
     const octokit = github.getOctokit(token)
     const context = github.context
 
@@ -27,16 +37,6 @@ async function main() {
     const payload = JSON.stringify(github.context.payload, undefined, 2)
     console.log(`The event payload: ${payload}`)
 
-    const token = process.env.GITHUB_TOKEN
-    const owner = process.env.GITHUB_ACTOR
-    const repo = process.env.GITHUB_REPOSITORY
-    const message = 'automated: publish-to-github action'
-
-    const remote = `https://${owner}:${token}@github.com/${repo}.git`
-
-    const branchName = 'master'
-    const githubSha = process.env.GITHUB_SHA
-    const timestamp = new Date().toISOString()
 
     // initialize git
     _(`git config http.sslVerify false`)
