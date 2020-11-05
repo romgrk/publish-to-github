@@ -5,39 +5,43 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 
-try {
-  // `who-to-greet` input defined in action metadata file
-  // const nameToGreet = core.getInput('who-to-greet')
-  const nameToGreet = 'test'
-  console.log(`Hello ${nameToGreet}!`)
-  const time = (new Date()).toTimeString()
-  core.setOutput("time", time)
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`)
+async function main() {
+  try {
+    // `who-to-greet` input defined in action metadata file
+    // const nameToGreet = core.getInput('who-to-greet')
+    const nameToGreet = 'test'
+    console.log(`Hello ${nameToGreet}!`)
+    const time = (new Date()).toTimeString()
+    core.setOutput("time", time)
+    // Get the JSON webhook payload for the event that triggered the workflow
+    const payload = JSON.stringify(github.context.payload, undefined, 2)
 
-  const owner = process.env.GITHUB_ACTOR
-  const repo = process.env.GITHUB_REPOSITORY
-  const message = 'automated: publish-to-github action'
+    const owner = process.env.GITHUB_ACTOR
+    const repo = process.env.GITHUB_REPOSITORY
+    const message = 'automated: publish-to-github action'
 
-  const response = await octokit().repos.listCommits({
-    owner,
-    repo,
-    sha: base,
-    per_page: 1
-  })
-  console.log(response)
-  let latestCommitSha = response.data[0].sha
-  const treeSha = response.data[0].commit.tree.sha
-  console.log({ latestCommitSha, treeSha })
+    const response = await octokit().repos.listCommits({
+      owner,
+      repo,
+      sha: base,
+      per_page: 1
+    })
+    console.log(response)
+    let latestCommitSha = response.data[0].sha
+    const treeSha = response.data[0].commit.tree.sha
+    console.log({ latestCommitSha, treeSha })
 
-  /* octokit.git.createCommit({
-   *   owner,
-   *   repo,
-   *   message,
-   *   tree,
-   *   parents,
-   * }); */
-} catch (error) {
-  core.setFailed(error.message)
+    console.log(`The event payload: ${payload}`)
+    /* octokit.git.createCommit({
+    *   owner,
+    *   repo,
+    *   message,
+    *   tree,
+    *   parents,
+    * }); */
+  } catch (error) {
+    core.setFailed(error.message)
+  }
 }
+
+main()
