@@ -5813,6 +5813,7 @@ async function main() {
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)
+    console.log(`The event payload: ${payload}`)
 
     const token = process.env.GITHUB_TOKEN
     const owner = process.env.GITHUB_ACTOR
@@ -5833,7 +5834,6 @@ async function main() {
     const treeSha = response.data[0].commit.tree.sha
     console.log({ latestCommitSha, treeSha })
 
-    console.log(`The event payload: ${payload}`)
     /* octokit.git.createCommit({
     *   owner,
     *   repo,
