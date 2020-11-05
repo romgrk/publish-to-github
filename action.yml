@@ -1,6 +1,6 @@
 name: 'Publish to Github (javascript action)'
 description: 'Updates & adds files'
-inputs:
+# inputs:
   # who-to-greet:  # id of input
     # description: 'Who to greet'
     # required: true
