@@ -5811,9 +5811,13 @@ async function main() {
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)
 
+    const token = process.env.GITHUB_TOKEN
     const owner = process.env.GITHUB_ACTOR
     const repo = process.env.GITHUB_REPOSITORY
     const message = 'automated: publish-to-github action'
+
+
+    const octokit = github.getOctokit(token)
 
     const response = await octokit().repos.listCommits({
       owner,
