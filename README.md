@@ -1,4 +1,5 @@
-publish-to-github-action
+
+# publish-to-github-action
 
 Forked from [mikeal/publish-to-github-action](https://github.com/mikeal/publish-to-github-action) to work on all
 supported OSes.
