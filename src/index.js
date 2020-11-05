@@ -4,16 +4,23 @@
 
 const core = require('@actions/core')
 const github = require('@actions/github')
+const shell = require('shelljs')
+
+function _(command) {
+  const result = shell.exec(command)
+  if (result.code !== 0)
+    throw new Error(result.stdout + result.stderr)
+  console.log(result.toString())
+  return result
+}
 
 async function main() {
   try {
     // `who-to-greet` input defined in action metadata file
     // const nameToGreet = core.getInput('who-to-greet')
-    const nameToGreet = 'test'
-    console.log(`Hello ${nameToGreet}!`)
-    const time = (new Date()).toTimeString()
-    core.setOutput("time", time)
+    console.log('Starting publish-to-action...')
 
+    const octokit = github.getOctokit(token)
     const context = github.context
 
     // Get the JSON webhook payload for the event that triggered the workflow
@@ -25,27 +32,31 @@ async function main() {
     const repo = process.env.GITHUB_REPOSITORY
     const message = 'automated: publish-to-github action'
 
+    const remote = `https://${owner}:${token}@github.com/${repo}.git`
 
-    const octokit = github.getOctokit(token)
+    const branchName = 'master'
+    const githubSha = process.env.GITHUB_SHA
+    const timestamp = new Date().toISOString()
 
-    const response = await octokit.repos.listCommits({
-      owner,
-      repo,
-      sha: base,
-      per_page: 1
-    })
-    console.log(response)
-    let latestCommitSha = response.data[0].sha
-    const treeSha = response.data[0].commit.tree.sha
-    console.log({ latestCommitSha, treeSha })
+    // initialize git
+    _(`git config http.sslVerify false`)
+    _(`git config user.name "Automated Publisher"`)
+    _(`git config user.email "actions@users.noreply.github.com"`)
+    _(`git remote add publisher "${remote}"`)
+    _(`git show-ref`) // useful for debugging
+    _(`git branch --verbose`)
 
-    /* octokit.git.createCommit({
-    *   owner,
-    *   repo,
-    *   message,
-    *   tree,
-    *   parents,
-    * }); */
+    // install lfs hooks
+    _(`git lfs install`)
+
+    // publish any new files
+    _(`git checkout ${branchName}`)
+    _(`git add -A`)
+    _(`git commit -m "Automated publish: ${timestamp} ${githubSha}" || exit 0`)
+    _(`git pull --rebase publisher ${branchName}`)
+    _(`git push publisher ${branchName}`)
+
+
   } catch (error) {
     core.setFailed(error.message)
   }
