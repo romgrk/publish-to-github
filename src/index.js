@@ -30,8 +30,8 @@ async function main() {
     const githubSha = process.env.GITHUB_SHA
     const timestamp = new Date().toISOString()
 
-    const octokit = github.getOctokit(token)
-    const context = github.context
+    // const octokit = github.getOctokit(token)
+    // const context = github.context
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)
