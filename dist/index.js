@@ -5808,6 +5808,9 @@ async function main() {
     console.log(`Hello ${nameToGreet}!`)
     const time = (new Date()).toTimeString()
     core.setOutput("time", time)
+
+    const context = github.context
+
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)
 
@@ -5819,7 +5822,7 @@ async function main() {
 
     const octokit = github.getOctokit(token)
 
-    const response = await octokit().repos.listCommits({
+    const response = await octokit.repos.listCommits({
       owner,
       repo,
       sha: base,
