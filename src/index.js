@@ -6,10 +6,14 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const shell = require('shelljs')
 
-function _(command) {
+function _(command, fn) {
   const result = shell.exec(command)
-  if (result.code !== 0)
+  if (fn) {
+    fn(result.code, result)
+  }
+  else if (result.code !== 0) {
     throw new Error(result.stdout + result.stderr)
+  }
   console.log(result.toString())
   return result
 }
@@ -52,7 +56,10 @@ async function main() {
     // publish any new files
     _(`git checkout ${branchName}`)
     _(`git add -A`)
-    _(`git commit -m "Automated publish: ${timestamp} ${githubSha}" || exit 0`)
+    _(`git commit -m "Automated publish: ${timestamp} ${githubSha}"`, code => {
+      if (code !== 0)
+        process.exit(0)
+    })
     _(`git pull --rebase publisher ${branchName}`)
     _(`git push publisher ${branchName}`)
 
