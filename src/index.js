@@ -55,12 +55,12 @@ async function main() {
 
     // publish any new files
     _(`git checkout ${branchName}`)
-    _(`git pull publisher ${branchName}`)
     _(`git add -A`)
     _(`git commit -m "Automated publish: ${timestamp} ${githubSha}"`, code => {
       if (code !== 0)
         process.exit(0)
     })
+    _(`git pull --rebase publisher ${branchName}`)
     _(`git push publisher ${branchName}`)
 
 
